@@ -1,59 +1,68 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react';
+import React, { FormEvent, useState } from 'react';
 
 import { FiChevronRight } from 'react-icons/fi';
-
-import logoImage from '../../assets/logo.svg';
-import Repository from '../Repository';
-
 import { Title, Form, Repositories } from './styles';
+import logoImage from '../../assets/logo.svg';
+
+import api from '../../services/api';
+// import Repository from '../Repository';
+
+interface Repository {
+  full_name: string;
+  description: string;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
+}
 
 const Dashboard: React.FC = () => {
+  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [newRepository, setNewRepository] = useState('');
+
+  async function handleAddRepository(
+    event: FormEvent<HTMLFormElement>,
+  ): Promise<void> {
+    event.preventDefault();
+
+    const response = await api.get<Repository>(`repos/${newRepository}`);
+    const repository = response.data;
+
+    setRepositories([...repositories, repository]);
+    setNewRepository('');
+  }
+
   return (
     <>
       <img src={logoImage} alt="Github Explorer" />
       <Title>Explore repositórios no GitHub</Title>
 
-      <Form>
-        <input placeholder="Digite o nome do repositório" />
+      <Form onSubmit={handleAddRepository}>
+        <input
+          value={newRepository}
+          onChange={(e) => setNewRepository(e.target.value)}
+          placeholder="Digite o nome do repositório"
+        />
         <button type="submit">Pesquisar</button>
       </Form>
 
       <Repositories>
-        <a href="#teste">
-          <img
-            src="https://avatars1.githubusercontent.com/u/35672212?s=460&u=fc42b4ce1eb30cd0bd84c5a94dad5a5c53071bf3&v=4"
-            alt="Dat"
-          />
-          <div>
-            <strong>martinsmessias/gostack</strong>
-            <p>Easy game bro!</p>
-          </div>
-          <FiChevronRight />
-        </a>
-        <a href="#teste">
-          <img
-            src="https://avatars1.githubusercontent.com/u/35672212?s=460&u=fc42b4ce1eb30cd0bd84c5a94dad5a5c53071bf3&v=4"
-            alt="Dat"
-          />
-          <div>
-            <strong>martinsmessias/gostack</strong>
-            <p>Easy game bro!</p>
-          </div>
-          <FiChevronRight />
-        </a>
-        <a href="#teste">
-          <img
-            src="https://avatars1.githubusercontent.com/u/35672212?s=460&u=fc42b4ce1eb30cd0bd84c5a94dad5a5c53071bf3&v=4"
-            alt="Dat"
-          />
-          <div>
-            <strong>martinsmessias/gostack</strong>
-            <p>Easy game bro!</p>
-          </div>
-          <FiChevronRight />
-        </a>
+        {repositories.map((repository) => (
+          <a key={repository.full_name} href="#teste">
+            <img
+              src={repository.owner.avatar_url}
+              alt={repository.owner.login}
+            />
+            <div>
+              <strong>{repository.full_name}</strong>
+              <p>{repository.description}</p>
+            </div>
+            <FiChevronRight size={20} />
+          </a>
+        ))}
       </Repositories>
     </>
   );
