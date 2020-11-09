@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# Github Explorer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![](http://img.youtube.com/vi/lD9hqPixsac/0.jpg)](http://www.youtube.com/watch?v=lD9hqPixsac "")
 
 ## Available Scripts
 
